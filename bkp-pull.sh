@@ -50,6 +50,8 @@ if [[ "$1" == "--help" ]]; then
 fi
 
 REMOTE_HOST="$1"
+RESTIC_EXE="restic"
+SUDO_RESTIC_EXE="sudo restic"
 
 if [ ! -d $CONFIGURATION_DIR ] ; then
 	echo "Configuration folder $CONFIGURATION_DIR is not present"
@@ -127,12 +129,12 @@ command -v restic >/dev/null 2>&1 || { echo >&2 "Required command restic is not 
 A='script'
 echo \$A loaded
 
-restic version
-restic init \
+$RESTIC_EXE version
+$RESTIC_EXE init \
   --repository-file "${REMOTE_TEMP_DIR}/repository1" \
   --password-file "${REMOTE_TEMP_DIR}/password1" \
   || true
-sudo restic -vvv backup \
+$SUDO_RESTIC_EXE -vvv backup \
   --repository-file "${REMOTE_TEMP_DIR}/repository2" \
   --password-file "${REMOTE_TEMP_DIR}/password2" \
   --files-from "${REMOTE_TEMP_DIR}/include.txt" \

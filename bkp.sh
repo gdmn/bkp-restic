@@ -35,6 +35,9 @@ if [[ "$1" == "--help" ]]; then
 	exit 0
 fi
 
+RESTIC_EXE="restic"
+SUDO_RESTIC_EXE="sudo restic"
+
 if [ ! -d $CONFIGURATION_DIR ] ; then
 	echo "Configuration folder $CONFIGURATION_DIR is not present"
 	exit 2
@@ -91,14 +94,14 @@ if [[ "$RESTIC_REPOSITORY" == "sftp:"* ]] ; then
 	ssh -t $srv "mkdir -p $dir"
 fi
 
-restic version \
+$RESTIC_EXE version \
   2>&1 | tee >(zstd -T0 --long >> "$log")
-restic init \
+$RESTIC_EXE init \
   2>&1 | tee >(zstd -T0 --long >> "$log") \
   || true
 
 ionice -c 2 -n 7 nice -n 19 \
-sudo restic -vvv backup \
+$SUDO_RESTIC_EXE -vvv backup \
   --files-from "$BKP_RESTIC_INCLUDE_FILES" \
   --iexclude-file "$BKP_RESTIC_EXCLUDE_FILES" \
   --exclude-if-present .exclude_from_restic_bkp \
