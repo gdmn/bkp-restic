@@ -15,7 +15,7 @@ This script executes `sudo restic`, so it is a good idea to add NOPASSWD rule to
 
 `bkp-pull.sh --help` - help and usage
 
-`bkp-pull.sh host` - open ssh connection to host and execute restic remotely
+`bkp-pull.sh host` - open ssh connection to a host and execute restic remotely
 
 This script executes `sudo restic` remotely, so it is a good idea to add NOPASSWD rule to sudoers configuration.
 
@@ -31,6 +31,17 @@ However, repository location, password and main script are FIFO sockets.
 It means, that they can be read only once.
 The last step is execution of the main script on the remote host,
 which performs backup.
+
+If the host has different location of restic main executable,
+not available in the `PATH`, it can be
+overriden (e.g. in the host specific configuration file):
+
+	export RESTIC_EXE="/opt/bin/restic"
+
+If the host does not have or need to use `sudo`,
+it also can be overriden:
+
+	export SUDO_RESTIC_EXE="/opt/bin/restic"
 
 # Configuration
 
@@ -113,3 +124,23 @@ pkg
 .local
 lost+found
 ```
+
+# bkp-env.sh
+
+The script imports the backup environment for a given host. When called without arguments,
+it imports the environment for the current host (`hostnamectl status --transient`).
+
+After running the script (`. bkp-env.sh`), current environment will contain
+`RESTIC_REPOSITORY` and `RESTIC_PASSWORD` variables,
+so it will be possible to run all `restic` commands without specyfing repository or password.
+
+# bkp-prune.sh
+
+It keeps repositories nice and tidy. Intended to be run periodically.
+The script requires configuration variable `BKP_REAL_PATH_RESTIC_REPOSITORY` to be set
+to the filesystem path with repositories.
+
+# bkp-status.sh
+
+It prints all snapshots for all repositories found
+in the filesystem path `BKP_REAL_PATH_RESTIC_REPOSITORY`.
