@@ -13,7 +13,7 @@ Usage:
 EOF
 }
 
-bkp_setup_env() {
+bkp_load_env() {
 	export REMOTE_HOST="$1"
 	echo "Loading configuration for $REMOTE_HOST"
 	if [ ! -d $CONFIGURATION_DIR ] ; then
@@ -32,7 +32,9 @@ bkp_setup_env() {
 		. "$REMOTE_HOST.conf"
 		popd >/dev/null 2>&1
 	fi
+}
 
+bkp_verify_env() {
 	if [ -z ${BKP_RESTIC_PASSWORD+x} ]; then
 		echo "BKP_RESTIC_PASSWORD is unset"
 		exit 3
@@ -44,6 +46,11 @@ bkp_setup_env() {
 
 	export RESTIC_REPOSITORY="${BKP_REST_RESTIC_REPOSITORY}"
 	export RESTIC_PASSWORD="${BKP_RESTIC_PASSWORD}"
+}
+
+bkp_setup_env() {
+    bkp_load_env "$1"
+    bkp_verify_env
 
 	if [ ! -z ${BKP_REAL_PATH_RESTIC_REPOSITORY+x} ]; then
 		if [ -d "${BKP_REAL_PATH_RESTIC_REPOSITORY}${REMOTE_HOST}" ]; then

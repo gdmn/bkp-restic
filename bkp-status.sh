@@ -4,13 +4,19 @@ set -e
 
 command -v restic >/dev/null 2>&1 || { echo >&2 "Required command restic is not installed."; exit 1; }
 
-CONFIGURATION_DIR="$HOME/.config/bkp-restic"
-if [ -f $CONFIGURATION_DIR/main.conf ] ; then
-	echo "Loading $CONFIGURATION_DIR/main.conf"
-	pushd "$CONFIGURATION_DIR" >/dev/null 2>&1
-	. "main.conf"
-	popd >/dev/null 2>&1
+SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+if command -v "bkp-env.sh" >/dev/null 2>&1 ; then
+    CMD_BKP_ENV="bkp-env.sh"
+elif command -v "${SCRIPT_DIR}/bkp-env.sh" >/dev/null 2>&1 ; then
+    CMD_BKP_ENV="${SCRIPT_DIR}/bkp-env.sh"
 fi
+if [ -z ${CMD_BKP_ENV+x} ]; then
+	echo "Can not find bkp-env.sh"
+	exit 3
+fi
+. $CMD_BKP_ENV --no-auto
+bkp_load_env bkp-prune
+
 if [ -z ${BKP_RESTIC_PASSWORD+x} ]; then
 	echo "BKP_RESTIC_PASSWORD is unset"
 	exit 3
@@ -23,9 +29,7 @@ if [ ! -d "${BKP_REAL_PATH_RESTIC_REPOSITORY}" ]; then
 	echo "Repository folder $BKP_REAL_PATH_RESTIC_REPOSITORY is not present"
 	exit 2
 fi
-
 export RESTIC_PASSWORD="${BKP_RESTIC_PASSWORD}"
-SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 processRepoSnapshots() {
 	echo -n "$1: "

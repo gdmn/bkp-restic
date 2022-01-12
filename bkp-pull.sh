@@ -52,23 +52,19 @@ fi
 REMOTE_HOST="$1"
 RESTIC_EXE="restic"
 SUDO_RESTIC_EXE="sudo restic"
+SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
-if [ ! -d $CONFIGURATION_DIR ] ; then
-	echo "Configuration folder $CONFIGURATION_DIR is not present"
-	exit 2
+if command -v "bkp-env.sh" >/dev/null 2>&1 ; then
+    CMD_BKP_ENV="bkp-env.sh"
+elif command -v "${SCRIPT_DIR}/bkp-env.sh" >/dev/null 2>&1 ; then
+    CMD_BKP_ENV="${SCRIPT_DIR}/bkp-env.sh"
 fi
-if [ -f $CONFIGURATION_DIR/main.conf ] ; then
-	echo "Loading $CONFIGURATION_DIR/main.conf"
-	pushd "$CONFIGURATION_DIR" >/dev/null 2>&1
-	. "main.conf"
-	popd >/dev/null 2>&1
+if [ -z ${CMD_BKP_ENV+x} ]; then
+	echo "Can not find bkp-env.sh"
+	exit 3
 fi
-if [ -f $CONFIGURATION_DIR/$REMOTE_HOST.conf ] ; then
-	echo "Loading $CONFIGURATION_DIR/$REMOTE_HOST.conf"
-	pushd "$CONFIGURATION_DIR" >/dev/null 2>&1
-	. "$REMOTE_HOST.conf"
-	popd >/dev/null 2>&1
-fi
+. $CMD_BKP_ENV --no-auto
+bkp_load_env "$REMOTE_HOST"
 
 if [ -z ${BKP_RESTIC_PASSWORD+x} ]; then
 	echo "BKP_RESTIC_PASSWORD is unset"
