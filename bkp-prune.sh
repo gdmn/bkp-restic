@@ -38,6 +38,7 @@ processRepoClean() {
 	# keep daily snapshots for a week, weekly for a month, monthly for a year and yearly for 2 years:
 	ionice -c 2 -n 7 nice -n 19 \
 	restic forget --prune --verbose \
+	  --cleanup-cache \
 	  -r "$1" \
 	  --keep-within-daily 7d --keep-within-weekly 1m --keep-within-monthly 1y --keep-within-yearly 2y \
 	  --keep-last 7 \

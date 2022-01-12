@@ -28,11 +28,10 @@ export RESTIC_PASSWORD="${BKP_RESTIC_PASSWORD}"
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 processRepoSnapshots() {
-	echo "$1"
+	echo -n "$1: "
 	restic snapshots \
-		--compact \
-		-r "$1" \
-		| grep "$(basename $1)" || echo "ERROR" && true
+		--no-lock --compact \
+		-r "$1" || true
 }
 
 find "$BKP_REAL_PATH_RESTIC_REPOSITORY" -mindepth 0 -maxdepth 3 -name 'snapshots' -type d | \
