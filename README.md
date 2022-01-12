@@ -144,3 +144,11 @@ to the filesystem path with repositories.
 
 It prints all snapshots for all repositories found
 in the filesystem path `BKP_REAL_PATH_RESTIC_REPOSITORY`.
+
+# bkp-stream.sh
+
+Backup input stream. E.g. `tar -c /home | $(basename $0) home.tar` will create compressed `home.tar.zst` in the repository `hostname-streams` (repository can be configured by `BKP_REST_RESTIC_REPOSITORY` property).
+
+# bkp-openwrt.sh
+
+Backup openwrt router using lede `/cgi-bin/cgi-backup` endpoint. Default repository is `openwrt_IP`. It logs in using `root` user name and property `LUCI_PASSWORD`.
