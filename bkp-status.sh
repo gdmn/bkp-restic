@@ -32,10 +32,11 @@ fi
 export RESTIC_PASSWORD="${BKP_RESTIC_PASSWORD}"
 
 processRepoSnapshots() {
-	echo -n "$1: "
+	echo "$1:"
 	restic snapshots \
 		--no-lock --compact \
 		-r "$1" || true
+    echo ''
 }
 
 find "$BKP_REAL_PATH_RESTIC_REPOSITORY" -mindepth 0 -maxdepth 3 -name 'snapshots' -type d | \
