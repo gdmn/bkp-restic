@@ -32,10 +32,16 @@ fi
 export RESTIC_PASSWORD="${BKP_RESTIC_PASSWORD}"
 
 processRepoSnapshots() {
+    du -xsh "$1" || \
 	echo "$1:"
+    if command -v jq >/dev/null 2>&1 ; then
+        b=$(basename "$1")
+        restic snapshots --no-lock --quiet  --json -r "$1" | jq '.[] | .time' | sed 's/\..*//' | sed 's/\"//' | sed 's/T/ /' | sed "s/^/$b\t/"
+    else
 	restic snapshots \
-		--no-lock --compact \
+		--no-lock --compact --quiet \
 		-r "$1" || true
+    fi
     echo ''
 }
 
