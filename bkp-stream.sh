@@ -19,13 +19,13 @@ EOF
 }
 
 if [ $# -lt 1 ]; then
-	show_help
-	exit 1
+    show_help
+    exit 1
 fi
 
 if [[ "$1" == "--help" ]]; then
-	show_help
-	exit 0
+    show_help
+    exit 0
 fi
 
 export REMOTE_HOST="$(hostnamectl status --transient)-streams"
@@ -36,8 +36,8 @@ elif command -v "${SCRIPT_DIR}/bkp-env.sh" >/dev/null 2>&1 ; then
     CMD_BKP_ENV="${SCRIPT_DIR}/bkp-env.sh"
 fi
 if [ -z ${CMD_BKP_ENV+x} ]; then
-	echo "Can not find bkp-env.sh"
-	exit 3
+    echo "Can not find bkp-env.sh"
+    exit 3
 fi
 . $CMD_BKP_ENV --no-auto
 bkp_load_env "$REMOTE_HOST"

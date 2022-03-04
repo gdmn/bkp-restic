@@ -39,14 +39,14 @@ EOF
 set -e
 
 if [ $# -lt 1 ]; then
-	show_usage
-	exit 1
+    show_usage
+    exit 1
 fi
 
 if [[ "$1" == "--help" ]]; then
-	show_usage
-	show_help
-	exit 0
+    show_usage
+    show_help
+    exit 0
 fi
 
 REMOTE_HOST="$1"
@@ -60,39 +60,39 @@ elif command -v "${SCRIPT_DIR}/bkp-env.sh" >/dev/null 2>&1 ; then
     CMD_BKP_ENV="${SCRIPT_DIR}/bkp-env.sh"
 fi
 if [ -z ${CMD_BKP_ENV+x} ]; then
-	echo "Can not find bkp-env.sh"
-	exit 3
+    echo "Can not find bkp-env.sh"
+    exit 3
 fi
 . $CMD_BKP_ENV --no-auto
 bkp_load_env "$REMOTE_HOST"
 
 if [ -z ${BKP_RESTIC_PASSWORD+x} ]; then
-	echo "BKP_RESTIC_PASSWORD is unset"
-	exit 3
+    echo "BKP_RESTIC_PASSWORD is unset"
+    exit 3
 fi
 if [ -z ${BKP_FORWARDED_RESTIC_REPOSITORY+x} ]; then
-	echo "BKP_FORWARDED_RESTIC_REPOSITORY is unset"
-	exit 3
+    echo "BKP_FORWARDED_RESTIC_REPOSITORY is unset"
+    exit 3
 fi
 if [ -z ${BKP_SSH_FORWARD_RULE+x} ]; then
-	echo "BKP_SSH_FORWARD_RULE is unset"
-	exit 3
+    echo "BKP_SSH_FORWARD_RULE is unset"
+    exit 3
 fi
 if [ -z ${BKP_RESTIC_INCLUDE_FILES+x} ]; then
-	echo "BKP_RESTIC_INCLUDE_FILES is unset"
-	exit 3
+    echo "BKP_RESTIC_INCLUDE_FILES is unset"
+    exit 3
 fi
 if [ -z ${BKP_RESTIC_EXCLUDE_FILES+x} ]; then
-	echo "BKP_RESTIC_EXCLUDE_FILES is unset"
-	exit 3
+    echo "BKP_RESTIC_EXCLUDE_FILES is unset"
+    exit 3
 fi
 if [ ! -r ${BKP_RESTIC_INCLUDE_FILES} ]; then
-	echo "$BKP_RESTIC_INCLUDE_FILES is not readable"
-	exit 3
+    echo "$BKP_RESTIC_INCLUDE_FILES is not readable"
+    exit 3
 fi
 if [ ! -r ${BKP_RESTIC_EXCLUDE_FILES} ]; then
-	echo "$BKP_RESTIC_EXCLUDE_FILES is not readable"
-	exit 3
+    echo "$BKP_RESTIC_EXCLUDE_FILES is not readable"
+    exit 3
 fi
 
 SSH_CONTROL_SOCKET="$(mktemp)"
@@ -100,8 +100,8 @@ SSH="ssh -R $BKP_SSH_FORWARD_RULE -S $SSH_CONTROL_SOCKET $REMOTE_HOST"
 
 echo -n 'waiting for ssh...'
 until $SSH -o ConnectTimeout=1 -o ConnectionAttempts=1 -t true >/dev/null 2>&1; do
-	echo -n '.'
-	sleep 3
+    echo -n '.'
+    sleep 3
 done
 echo ' ok'
 

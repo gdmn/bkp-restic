@@ -31,8 +31,8 @@ EOF
 }
 
 if [[ "$1" == "--help" ]]; then
-	show_help
-	exit 0
+    show_help
+    exit 0
 fi
 
 RESTIC_EXE="restic"
@@ -45,39 +45,39 @@ elif command -v "${SCRIPT_DIR}/bkp-env.sh" >/dev/null 2>&1 ; then
     CMD_BKP_ENV="${SCRIPT_DIR}/bkp-env.sh"
 fi
 if [ -z ${CMD_BKP_ENV+x} ]; then
-	echo "Can not find bkp-env.sh"
-	exit 3
+    echo "Can not find bkp-env.sh"
+    exit 3
 fi
 . $CMD_BKP_ENV --no-auto
 bkp_load_env "$REMOTE_HOST"
 bkp_verify_env
 if [ -z ${BKP_RESTIC_INCLUDE_FILES+x} ]; then
-	echo "BKP_RESTIC_INCLUDE_FILES is unset"
-	exit 3
+    echo "BKP_RESTIC_INCLUDE_FILES is unset"
+    exit 3
 fi
 if [ -z ${BKP_RESTIC_EXCLUDE_FILES+x} ]; then
-	echo "BKP_RESTIC_EXCLUDE_FILES is unset"
-	exit 3
+    echo "BKP_RESTIC_EXCLUDE_FILES is unset"
+    exit 3
 fi
 if [ ! -r ${BKP_RESTIC_INCLUDE_FILES} ]; then
-	echo "$BKP_RESTIC_INCLUDE_FILES is not readable"
-	exit 3
+    echo "$BKP_RESTIC_INCLUDE_FILES is not readable"
+    exit 3
 fi
 if [ ! -r ${BKP_RESTIC_EXCLUDE_FILES} ]; then
-	echo "$BKP_RESTIC_EXCLUDE_FILES is not readable"
-	exit 3
+    echo "$BKP_RESTIC_EXCLUDE_FILES is not readable"
+    exit 3
 fi
 
 log="${HOME}/bkp-${REMOTE_HOST}-$(date +%Y%m%d_%H%M%S).log.zst"
 echo "LOG: $log"
 
 if [[ "$RESTIC_REPOSITORY" == "sftp:"* ]] ; then
-	dir=${RESTIC_REPOSITORY//*:/}
-	srv=${RESTIC_REPOSITORY//:\/*/}
-	srv=${srv//*:/}
-	echo "dir: $dir"
-	echo "srv: $srv"
-	ssh -t $srv "mkdir -p $dir"
+    dir=${RESTIC_REPOSITORY//*:/}
+    srv=${RESTIC_REPOSITORY//:\/*/}
+    srv=${srv//*:/}
+    echo "dir: $dir"
+    echo "srv: $srv"
+    ssh -t $srv "mkdir -p $dir"
 fi
 
 $RESTIC_EXE version \

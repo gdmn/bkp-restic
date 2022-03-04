@@ -11,47 +11,47 @@ elif command -v "${SCRIPT_DIR}/bkp-env.sh" >/dev/null 2>&1 ; then
     CMD_BKP_ENV="${SCRIPT_DIR}/bkp-env.sh"
 fi
 if [ -z ${CMD_BKP_ENV+x} ]; then
-	echo "Can not find bkp-env.sh"
-	exit 3
+    echo "Can not find bkp-env.sh"
+    exit 3
 fi
 . $CMD_BKP_ENV --no-auto
 bkp_load_env bkp-prune
 
 if [ -z ${BKP_RESTIC_PASSWORD+x} ]; then
-	echo "BKP_RESTIC_PASSWORD is unset"
-	exit 3
+    echo "BKP_RESTIC_PASSWORD is unset"
+    exit 3
 fi
 if [ -z ${BKP_REAL_PATH_RESTIC_REPOSITORY+x} ]; then
-	echo "Repository folder $BKP_REAL_PATH_RESTIC_REPOSITORY is unset"
-	exit 3
+    echo "Repository folder $BKP_REAL_PATH_RESTIC_REPOSITORY is unset"
+    exit 3
 fi
 if [ ! -d "${BKP_REAL_PATH_RESTIC_REPOSITORY}" ]; then
-	echo "Repository folder $BKP_REAL_PATH_RESTIC_REPOSITORY is not present"
-	exit 2
+    echo "Repository folder $BKP_REAL_PATH_RESTIC_REPOSITORY is not present"
+    exit 2
 fi
 export RESTIC_PASSWORD="${BKP_RESTIC_PASSWORD}"
 
 processRepoSnapshots() {
     du -xsh "$1" || \
-	echo "$1:"
+    echo "$1:"
     if command -v jq >/dev/null 2>&1 ; then
         b=$(basename "$1")
         restic snapshots --no-lock --quiet  --json -r "$1" | jq '.[] | .time' | sed 's/\..*//' | sed 's/\"//' | sed 's/T/ /' | sed "s/^/$b\t/"
     else
-	restic snapshots \
-		--no-lock --compact --quiet \
-		-r "$1" || true
+    restic snapshots \
+        --no-lock --compact --quiet \
+        -r "$1" || true
     fi
     echo ''
 }
 
 find "$BKP_REAL_PATH_RESTIC_REPOSITORY" -mindepth 0 -maxdepth 3 -name 'snapshots' -type d | \
 while read k ; do
-	dir="$(dirname $k)"
-	if [ -r "${dir}/config" ] ; then
-		echo "${dir}"
-	fi
+    dir="$(dirname $k)"
+    if [ -r "${dir}/config" ] ; then
+        echo "${dir}"
+    fi
 done | \
 while read repo ; do
-	processRepoSnapshots "$repo"
+    processRepoSnapshots "$repo"
 done

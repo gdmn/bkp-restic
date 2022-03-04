@@ -15,8 +15,8 @@ EOF
 }
 
 if [ $# -lt 1 ]; then
-	show_usage
-	exit 1
+    show_usage
+    exit 1
 fi
 
 IP="$1"
@@ -32,16 +32,16 @@ elif command -v "${SCRIPT_DIR}/bkp-env.sh" >/dev/null 2>&1 ; then
     CMD_BKP_ENV="${SCRIPT_DIR}/bkp-env.sh"
 fi
 if [ -z ${CMD_BKP_ENV+x} ]; then
-	echo "Can not find bkp-env.sh"
-	exit 3
+    echo "Can not find bkp-env.sh"
+    exit 3
 fi
 . $CMD_BKP_ENV --no-auto
 bkp_load_env "openwrt_$IP"
 bkp_verify_env
 
 if [ -z ${LUCI_PASSWORD+x} ]; then
-	echo "LUCI_PASSWORD is unset"
-	exit 3
+    echo "LUCI_PASSWORD is unset"
+    exit 3
 fi
 
 NAME="openwrt_${IP}-$(date +%Y%m%d_%H%M%S)"
