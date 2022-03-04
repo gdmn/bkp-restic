@@ -44,19 +44,10 @@ processRepoClean() {
     restic forget --verbose \
       --cleanup-cache \
       -r "$1" \
+      --group-by host,tags \
       --keep-within-daily 7d --keep-within-weekly 1m --keep-within-monthly 1y --keep-within-yearly 2y \
       --keep-last 7 \
       2>&1 | tee >(zstd -T0 --long >> "$log")
-
-    # forget openwrt snapshots, workaround for different paths in snaphots, keep last 7 snapshots:
-    if command -v jq >/dev/null 2>&1 ; then
-        ionice -c 2 -n 7 nice -n 19 \
-        restic forget --verbose \
-          --cleanup-cache \
-          -r "$1" \
-          $(restic snapshots --tag openwrt --no-lock --quiet --json -r "$1" | jq '.[] | .short_id' | tac | sed '1,7 d' | tac | sed 's/\"//g') \
-          2>&1 | tee >(zstd -T0 --long >> "$log")
-    fi
 
     ionice -c 2 -n 7 nice -n 19 \
     restic prune --max-unused 0 \
