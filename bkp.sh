@@ -7,7 +7,6 @@ command -v hostnamectl >/dev/null 2>&1 || { echo >&2 "Required command hostnamec
 command -v zstd >/dev/null 2>&1 || { echo >&2 "Required command zstd is not installed."; exit 1; }
 
 CONFIGURATION_DIR="$HOME/.config/bkp-restic"
-export REMOTE_HOST="$(hostnamectl status --transient)"
 
 show_help() {
 cat << EOF
@@ -16,9 +15,11 @@ Restic backup
 Usage:
     $(basename $0) --help - help and usage
     $(basename $0) - execute restic backup
+    $(basename $0) alternative-conf - execute restic backup for alternative configuration
+      instead of current host specific configuration, i.e. "REMOTE_HOST=\$1" in that case
 
 Main configuration file: $CONFIGURATION_DIR/main.conf
-Host specific configuration file: $CONFIGURATION_DIR/$REMOTE_HOST.conf
+Host specific configuration file: $CONFIGURATION_DIR/$(hostnamectl status --transient).conf
 
 Example configuration:
     export BKP_RESTIC_PASSWORD='abc'
@@ -35,6 +36,7 @@ if [[ "$1" == "--help" ]]; then
     exit 0
 fi
 
+export REMOTE_HOST="${1:-$(hostnamectl status --transient)}"
 RESTIC_EXE="restic"
 SUDO_RESTIC_EXE="sudo restic"
 
