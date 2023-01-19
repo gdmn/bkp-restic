@@ -152,3 +152,8 @@ Backup input stream. E.g. `tar -c /home | $(basename $0) home.tar` will create c
 # bkp-openwrt.sh
 
 Backup openwrt router using lede `/cgi-bin/cgi-backup` endpoint. Default repository is `openwrt_IP`. It logs in using `root` user name and property `LUCI_PASSWORD`.
+
+# bkp-mount.sh
+
+Mount specific host backup.
+
