@@ -120,7 +120,7 @@ echo "$BKP_RESTIC_PASSWORD" | $SSH "cat > ${REMOTE_TEMP_DIR}/password2" &
 $SSH "mkfifo $REMOTE_TEMP_DIR/fifo"
 cat << EOF | $SSH "cat > ${REMOTE_TEMP_DIR}/fifo" &
 set -e
-command -v restic >/dev/null 2>&1 || { echo >&2 "Required command restic is not installed."; exit 1; }
+command -v $RESTIC_EXE >/dev/null 2>&1 || { echo >&2 "Required command restic is not installed."; exit 1; }
 
 A='script'
 echo \$A loaded
@@ -131,6 +131,7 @@ $RESTIC_EXE init \
   --password-file "${REMOTE_TEMP_DIR}/password1" \
   || true
 $SUDO_RESTIC_EXE -vvv backup \
+  --no-scan --read-concurrency 10 \
   --repository-file "${REMOTE_TEMP_DIR}/repository2" \
   --password-file "${REMOTE_TEMP_DIR}/password2" \
   --files-from "${REMOTE_TEMP_DIR}/include.txt" \

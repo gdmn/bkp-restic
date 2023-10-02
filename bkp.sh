@@ -90,6 +90,7 @@ $RESTIC_EXE init \
 
 ionice -c 2 -n 7 nice -n 19 \
 $SUDO_RESTIC_EXE -vvv backup \
+  --no-scan --read-concurrency 10 \
   --files-from "$BKP_RESTIC_INCLUDE_FILES" \
   --iexclude-file "$BKP_RESTIC_EXCLUDE_FILES" \
   --exclude-if-present .exclude_from_restic_bkp \
