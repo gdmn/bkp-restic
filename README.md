@@ -7,6 +7,7 @@
 This script executes `sudo restic`, so it is a good idea to add NOPASSWD rule to sudoers configuration:
 
     Cmnd_Alias  BACKUP = /usr/bin/restic, /snap/bin/restic
+    Defaults!BACKUP    env_keep += "RESTIC_PASSWORD RESTIC_REPOSITORY"
     %wheel ALL=(ALL) ALL, NOPASSWD: BACKUP
 
 # Restic pull backup
@@ -156,4 +157,3 @@ Backup openwrt router using lede `/cgi-bin/cgi-backup` endpoint. Default reposit
 # bkp-mount.sh
 
 Mount specific host backup.
-
