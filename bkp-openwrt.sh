@@ -63,9 +63,9 @@ curl "${URL}/cgi-backup" --data-raw "sessionid=${sessionid}" \
         | restic \
         --verbose \
         --no-cache \
-        --tag "openwrt" \
-        --tag "stream" \
-        --tag "${IP}" \
+        --tag="openwrt" \
+        --tag="stream" \
+        --tag="${IP}" \
         --stdin \
         --stdin-filename="${NAME}.tgz" \
         backup \

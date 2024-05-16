@@ -11,10 +11,14 @@ cat << EOF
 Restic backup stdin
 
 Usage:
-    $(basename $0) name - backup stdin as name.zst
+    $(basename $0) name - backup stdin as "name"
 
 Example:
     tar -c /home | $(basename $0) home.tar
+    date | $(basename $0) date.txt
+
+To clean:
+    filter="--tag stream"; restic forget --keep-last 1 \$filter; restic snapshots \$filter | grep -E '^[0-9a-f]{8}.*stream.*' | sed -E 's/(^[0-9a-f]{8}).*/\\1/' | while read id; do restic forget \$id; done; restic prune --max-unused 0
 EOF
 }
 
@@ -56,15 +60,16 @@ restic init \
 
 cat | \
 ionice -c 2 -n 7 nice -n 19 \
-zstd -T0 --long \
-        | restic \
+        restic \
         --verbose \
         --no-cache \
-        --tag "${NAME}" \
-        --tag "stream" \
+        --no-scan \
+        --tag="${NAME}" \
+        --tag="stream" \
         --stdin \
-        --stdin-filename="${NAME}.zst" \
+        --stdin-filename="${NAME}" \
         backup \
   2>&1 | tee >(zstd -T0 --long >> "$log")
 
 exit 0
+
