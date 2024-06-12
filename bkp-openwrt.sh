@@ -58,7 +58,7 @@ restic init \
 URL="http://${IP}/cgi-bin"
 f=$(mktemp)
 routerpswd="luci_username=root&luci_password=$LUCI_PASSWORD"
-sessionid=$(curl --silent --data-raw "$routerpswd" -c - "${URL}/luci" | grep sysauth | sed -r 's/.*sysauth\s*//')
+sessionid=$(curl --silent --data-raw "$routerpswd" -c - "${URL}/luci" | grep sysauth | sed -r 's/.*sysauth.*\s+//')
 curl "${URL}/cgi-backup" --data-raw "sessionid=${sessionid}" \
         | restic \
         --verbose \
