@@ -140,9 +140,10 @@ $SUDO_RESTIC_EXE -vvv backup \
   --one-file-system \
   2>&1 \
   | grep -v '^unchanged ' | grep -v '0 B added'
+echo 'Restic finished'
 EOF
 
-$SSH -t "bash ${REMOTE_TEMP_DIR}/fifo" \
+$SSH -t "sh ${REMOTE_TEMP_DIR}/fifo" \
   || true
 $SSH "rm -rf $REMOTE_TEMP_DIR"
 $SSH -O exit
