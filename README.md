@@ -10,6 +10,10 @@ This script executes `sudo restic`, so it is a good idea to add NOPASSWD rule to
     Defaults!BACKUP    env_keep += "RESTIC_PASSWORD RESTIC_REPOSITORY"
     %wheel ALL=(ALL) ALL, NOPASSWD: BACKUP
 
+To install `restic` on remote linux amd64 machine, run:
+
+    curl -s https://api.github.com/repos/restic/restic/releases/latest | grep 'browser_download_url.*\.bz2"' | grep amd64 | grep linux | cut -d : -f 2,3 | tr -d \" | xargs -n 1 curl -sSL > /tmp/restic.bz2 && sudo sh -c 'bzip2 -dc /tmp/restic.bz2 > /usr/local/bin/restic && chmod +x /usr/local/bin/restic'
+
 # Restic pull backup
 
 ### Usage:
