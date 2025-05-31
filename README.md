@@ -6,9 +6,9 @@
 
 This script executes `sudo restic`, so it is a good idea to add NOPASSWD rule to sudoers configuration:
 
-    Cmnd_Alias  BACKUP = /usr/bin/restic, /snap/bin/restic
-    Defaults!BACKUP    env_keep += "RESTIC_PASSWORD RESTIC_REPOSITORY"
-    %wheel ALL=(ALL) ALL, NOPASSWD: BACKUP
+    Cmnd_Alias BACKUP = /usr/bin/restic, /snap/bin/restic, /usr/local/bin/restic
+    Defaults!BACKUP env_keep += "RESTIC_PASSWORD RESTIC_REPOSITORY"
+    %wheel ALL=(ALL) NOPASSWD: BACKUP
 
 To install `restic` on remote linux amd64 machine, run:
 

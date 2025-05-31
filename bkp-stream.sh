@@ -3,7 +3,6 @@
 set -e
 
 command -v restic >/dev/null 2>&1 || { echo >&2 "Required command restic is not installed."; exit 1; }
-command -v hostnamectl >/dev/null 2>&1 || { echo >&2 "Required command hostnamectl is not installed."; exit 1; }
 command -v zstd >/dev/null 2>&1 || { echo >&2 "Required command zstd is not installed."; exit 1; }
 
 show_help() {
@@ -32,7 +31,7 @@ if [[ "$1" == "--help" ]]; then
     exit 0
 fi
 
-export REMOTE_HOST="$(hostnamectl status --transient)-streams"
+export REMOTE_HOST="$(hostnamectl status --transient 2>/dev/null || hostname)-streams"
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 if command -v "bkp-env.sh" >/dev/null 2>&1 ; then
     CMD_BKP_ENV="bkp-env.sh"
@@ -58,8 +57,14 @@ restic init \
   2>&1 | tee >(zstd -T0 --long >> "$log") \
   || true
 
+if command -v ionice >/dev/null 2>&1; then
+    lowprio="ionice -c 2 -n 7 nice -n 19"
+else
+    lowprio="nice -n 19"
+fi
+
 cat | \
-ionice -c 2 -n 7 nice -n 19 \
+$lowprio \
         restic \
         --verbose \
         --no-cache \

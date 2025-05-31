@@ -67,7 +67,8 @@ elif [[ "$1" == "--no-auto" ]]; then
 elif [ $# -eq 1 ]; then
     bkp_setup_env $1
 else
-    command -v hostnamectl >/dev/null 2>&1 && \
-    bkp_setup_env "$(hostnamectl status --transient)" || \
-    echo >&2 "Required command hostnamectl is not installed."
+    REMOTE_HOST="$(hostnamectl status --transient 2>/dev/null || hostname)"
+    [ -n "${REMOTE_HOST}" ] && \
+    bkp_setup_env "$REMOTE_HOST" || \
+    echo >&2 "Cannot get hostname."
 fi

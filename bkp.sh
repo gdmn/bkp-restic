@@ -3,7 +3,6 @@
 set -e
 
 command -v restic >/dev/null 2>&1 || { echo >&2 "Required command restic is not installed."; exit 1; }
-command -v hostnamectl >/dev/null 2>&1 || { echo >&2 "Required command hostnamectl is not installed."; exit 1; }
 command -v zstd >/dev/null 2>&1 || { echo >&2 "Required command zstd is not installed."; exit 1; }
 
 CONFIGURATION_DIR="$HOME/.config/bkp-restic"
@@ -19,7 +18,7 @@ Usage:
       instead of current host specific configuration, i.e. "REMOTE_HOST=\$1" in that case
 
 Main configuration file: $CONFIGURATION_DIR/main.conf
-Host specific configuration file: $CONFIGURATION_DIR/$(hostnamectl status --transient).conf
+Host specific configuration file: $CONFIGURATION_DIR/$(hostnamectl status --transient 2>/dev/null || hostname).conf
 
 Example configuration:
     export BKP_RESTIC_PASSWORD='abc'
@@ -36,7 +35,7 @@ if [[ "$1" == "--help" ]]; then
     exit 0
 fi
 
-export REMOTE_HOST="${1:-$(hostnamectl status --transient)}"
+export REMOTE_HOST="${1:-$(hostnamectl status --transient 2>/dev/null || hostname)}"
 RESTIC_EXE="restic"
 SUDO_RESTIC_EXE="sudo restic"
 
@@ -88,7 +87,13 @@ $RESTIC_EXE init \
   2>&1 | tee >(zstd -T0 --long >> "$log") \
   || true
 
-ionice -c 2 -n 7 nice -n 19 \
+if command -v ionice >/dev/null 2>&1; then
+    lowprio="ionice -c 2 -n 7 nice -n 19"
+else
+    lowprio="nice -n 19"
+fi
+
+$lowprio \
 $SUDO_RESTIC_EXE -vvv backup \
   --no-scan --read-concurrency 10 \
   --files-from "$BKP_RESTIC_INCLUDE_FILES" \

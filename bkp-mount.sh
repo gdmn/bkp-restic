@@ -3,10 +3,8 @@
 set -e
 
 command -v restic >/dev/null 2>&1 || { echo >&2 "Required command restic is not installed."; exit 1; }
-command -v hostnamectl >/dev/null 2>&1 || { echo >&2 "Required command hostnamectl is not installed."; exit 1; }
 
 CONFIGURATION_DIR="$HOME/.config/bkp-restic"
-export REMOTE_HOST="$(hostnamectl status --transient)"
 
 show_help() {
 cat << EOF
