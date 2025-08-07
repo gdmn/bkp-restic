@@ -180,3 +180,10 @@ Backup openwrt router using lede `/cgi-bin/cgi-backup` endpoint. Default reposit
 # bkp-mount.sh
 
 Mount specific host backup.
+
+# How to work with copy of the backup repository?
+
+`source $HOME/.config/bkp-restic/main.conf ; export RESTIC_PASSWORD="$BKP_RESTIC_PASSWORD"; export RESTIC_REPOSITORY="$(pwd)"`
+`restic snapshots`
+`restic check --read-data`
+
