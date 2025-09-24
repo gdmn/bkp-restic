@@ -101,4 +101,4 @@ $SUDO_RESTIC_EXE -vvv backup \
   --exclude-if-present .exclude_from_restic_bkp \
   --one-file-system \
   2>&1 | tee >(zstd -T0 --long >> "$log") \
-  | grep -v '^unchanged ' | grep -v '0 B added'
+  | grep -v '^unchanged ' | grep -v '0 B added' | grep -v 'start backup on \['
