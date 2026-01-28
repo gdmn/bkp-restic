@@ -187,3 +187,7 @@ Mount specific host backup.
 `restic snapshots`
 `restic check --read-data`
 
+# How to use remote rclone repository without bkp- scripts
+
+`export RESTIC_REPOSITORY=rclone:external-host-name:/home/user/restic/name`
+
