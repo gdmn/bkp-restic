@@ -95,7 +95,7 @@ if [ ! -r ${BKP_RESTIC_EXCLUDE_FILES} ]; then
     exit 3
 fi
 
-SSH_CONTROL_SOCKET="$(mktemp)"
+SSH_CONTROL_SOCKET="$(rm -fv $(mktemp))" # let ssh create socket
 SSH="ssh -R $BKP_SSH_FORWARD_RULE -S $SSH_CONTROL_SOCKET $REMOTE_HOST"
 
 echo -n 'waiting for ssh...'
@@ -139,7 +139,7 @@ $SUDO_RESTIC_EXE -vvv backup \
   --exclude-if-present .exclude_from_restic_bkp \
   --one-file-system \
   2>&1 \
-  | grep -v '^unchanged ' | grep -v '0 B added'
+  | grep -v '^unchanged ' | grep -v '0 B added' | grep -v 'start backup on \['
 echo 'Restic finished'
 EOF
 
