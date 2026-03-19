@@ -20,7 +20,7 @@ if [ $# -lt 1 ]; then
 fi
 
 IP="$1"
-if ! ping -c 1 -n -w 1 $IP >/dev/null 2>&1 ; then
+if ! ping -c 1 -n $IP >/dev/null 2>&1 ; then
     echo "Could not ping $IP"
     exit 1
 fi
@@ -58,7 +58,7 @@ restic init \
 URL="http://${IP}/cgi-bin"
 f=$(mktemp)
 routerpswd="luci_username=root&luci_password=$LUCI_PASSWORD"
-sessionid=$(curl --silent --data-raw "$routerpswd" -c - "${URL}/luci" | grep sysauth | sed -r 's/.*sysauth.*\s+//')
+sessionid=$(curl --silent --data-raw "$routerpswd" -c - "${URL}/luci" | grep sysauth | sed -r 's/.*sysauth.*[[:space:]]+//')
 curl "${URL}/cgi-backup" --data-raw "sessionid=${sessionid}" \
         | restic \
         --verbose \
