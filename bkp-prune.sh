@@ -34,13 +34,19 @@ export RESTIC_PASSWORD="${BKP_RESTIC_PASSWORD}"
 log="$HOME/bkp-prune-$(date +%Y%m%d_%H%M%S).log.zst"
 echo "LOG: $log"
 
+if command -v ionice >/dev/null 2>&1; then
+    lowprio="ionice -c 2 -n 7 nice -n 19"
+else
+    lowprio="nice -n 19"
+fi
+
 processRepoClean() {
     restic unlock \
       -r "$1" \
       2>&1 | tee >(zstd -T0 --long >> "$log")
 
     # keep daily snapshots for a week, weekly for a month, monthly for a year and yearly for 2 years:
-    ionice -c 2 -n 7 nice -n 19 \
+    $lowprio \
     restic forget --verbose \
       --cleanup-cache \
       -r "$1" \
@@ -49,12 +55,12 @@ processRepoClean() {
       --keep-last 7 \
       2>&1 | tee >(zstd -T0 --long >> "$log")
 
-    ionice -c 2 -n 7 nice -n 19 \
+    $lowprio \
     restic prune --max-unused 0 \
       -r "$1" \
       2>&1 | tee >(zstd -T0 --long >> "$log")
 
-    ionice -c 2 -n 7 nice -n 19 \
+    $lowprio \
     restic check --read-data-subset=9.9% \
       -r "$1" \
       2>&1 | tee >(zstd -T0 --long >> "$log")
@@ -65,12 +71,12 @@ processRepoKeepOneClean() {
       -r "$1" \
       2>&1 | tee >(zstd -T0 --long >> "$log")
 
-    ionice -c 2 -n 7 nice -n 19 \
+    $lowprio \
     restic forget --keep-last 1 \
       -r "$1" \
       2>&1 | tee >(zstd -T0 --long >> "$log")
 
-    ionice -c 2 -n 7 nice -n 19 \
+    $lowprio \
     restic prune --max-unused 0 \
       -r "$1" \
       2>&1 | tee >(zstd -T0 --long >> "$log")
@@ -87,4 +93,3 @@ while read repo ; do
     processRepoClean "$repo"
     #processRepoKeepOneClean "$repo"
 done
-
